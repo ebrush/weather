@@ -10,7 +10,6 @@ from django.db.models import F, Sum, Avg
 
 from history.models import WeatherDay, WeatherStation, WeatherStats
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -25,9 +24,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info({'msg': 'ingestion started', 'path': options['path']})
-        records_ingested_count = 0
-        files_processed = 0
-        for filepath_to_load in self.iter_files_to_process(options['path']):
+        records_ingested = 0
+        for num_files_processed, filepath_to_load in enumerate(
+                self.iter_files_to_process(options['path'])):
             station = WeatherStation.objects.get_or_create(
                 defaults={'code': filepath_to_load.stem},
                 code=filepath_to_load.stem
@@ -37,18 +36,10 @@ class Command(BaseCommand):
             weather_days_to_create = []
             for (date, temperature_max,
                  temperature_min,
-                 precipitation) in self.iter_rows_to_process(filepath_to_load):
+                 precipitation) in self.iter_rows_to_process(
+                str(filepath_to_load)):
                 date = datetime.datetime.strptime(date, '%Y%m%d').date()
                 years_updated.add(date.year)
-                temperature_max = (temperature_max
-                                   if temperature_max != '-9999'
-                                   else None)
-                temperature_min = (temperature_min
-                                   if temperature_min != '-9999'
-                                   else None)
-                precipitation = (precipitation
-                                 if precipitation != '-9999'
-                                 else None)
                 if (temperature_max is None
                         or temperature_min is None
                         or precipitation is None):
@@ -67,23 +58,22 @@ class Command(BaseCommand):
                     temperature_min=temperature_min,
                     precipitation=precipitation,
                 ))
-                records_ingested_count += 1
-            WeatherDay.objects.bulk_create(
+            records_ingested += len(WeatherDay.objects.bulk_create(
                 weather_days_to_create,
                 update_conflicts=True,
                 update_fields=('temperature_max', 'temperature_min',
                                'precipitation'),
                 unique_fields=('station', 'date'),
-            )
-            files_processed += 1
+            ))
+            num_files_processed += 1
 
             stats_to_update = []
             for r in WeatherDay.objects.filter(
                     station=station, date__year__in=years_updated).values(
-                    'date__year').annotate(
-                    avg_temperature_max_celsius=Avg(F('temperature_max') / 10),
-                    avg_temperature_min_celsius=Avg(F('temperature_min') / 10),
-                    total_precipitation_centimeters=Sum(F('precipitation') / 100)):
+                'date__year').annotate(
+                avg_temperature_max_celsius=Avg(F('temperature_max') / 10),
+                avg_temperature_min_celsius=Avg(F('temperature_min') / 10),
+                total_precipitation_centimeters=Sum(F('precipitation') / 100)):
                 stats_to_update.append(WeatherStats(
                     station=station,
                     year=r['date__year'],
@@ -101,8 +91,8 @@ class Command(BaseCommand):
 
         logger.info(
             {'msg': 'ingestion finished', 'path': options['path'],
-             'records_ingested': records_ingested_count,
-             'files_processed': files_processed})
+             'records_ingested': records_ingested,
+             'files_processed': num_files_processed})
 
     def iter_files_to_process(self, path: str) -> Iterator[Path]:
         path = Path(path)
@@ -118,7 +108,11 @@ class Command(BaseCommand):
         else:
             yield path
 
-    def iter_rows_to_process(self, filepath_to_load: Path):
-        with open(str(filepath_to_load), 'r') as f:
+    def iter_rows_to_process(self, filepath_to_load: str):
+        with open(filepath_to_load, 'r') as f:
             for line in f:
-                yield re.findall(r'\S+', line)
+                columns = re.findall(r'\S+', line)
+                for i, column in enumerate(columns):
+                    if column == '-9999':
+                        columns[i] = None
+                yield columns
