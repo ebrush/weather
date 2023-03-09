@@ -5,7 +5,7 @@ import pytest
 
 from history.management.commands.ingest_history import Command
 
-from history.models import WeatherStation, WeatherDay
+from history.models import WeatherStation, WeatherDay, WeatherStats
 
 
 class TestIngestHistoryCommandCalls:
@@ -28,12 +28,14 @@ class TestIngestHistoryCommandCalls:
 
         assert WeatherStation.objects.filter(code='EMPTYFILE0').exists()
 
-    def test_correct_values_stored_and_duplicates_overwritten(self, db):
+    def test_correct_values_and_statistics_stored_and_duplicates_overwritten(
+            self, db):
         call_command('ingest_history',
                      'history/tests/files_for_testing/directory/file_to_load2.txt')
 
         assert WeatherDay.objects.count() == 2
         assert WeatherDay.objects.filter(
+            station__code='file_to_load2',
             date__year=1989,
             date__month=3,
             date__day=13,
@@ -42,12 +44,22 @@ class TestIngestHistoryCommandCalls:
             precipitation=0,
         ).exists()
         assert WeatherDay.objects.filter(
+            station__code='file_to_load2',
             date__year=1989,
             date__month=3,
             date__day=14,
             temperature_max=94,
             temperature_min=-33,
-            precipitation=5,).exists()
+            precipitation=5,
+        ).exists()
+        assert WeatherStats.objects.count() == 1
+        assert WeatherStats.objects.filter(
+            station__code='file_to_load2',
+            year=1989,
+            avg_temperature_max=9.4,
+            avg_temperature_min=-1.35,
+            total_precipitation=.05,
+        ).exists()
 
 
 class TestIterFilesToProcess:
