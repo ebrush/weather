@@ -32,7 +32,7 @@
 `python manage.py ingest_history path/to/weather_directory`
 
 ### API Request examples
-* See weather-history.postman_collection.json which can be imported into postman
+* See weather-history.postman_collection.json which can be imported into Postman.
 * Query params can be removed and adjusted for desired filtering and navigation through pagination.
 * More info on params are in the Swagger docs.
 * Units of measure are documented in Swagger and Django Model's help_texts.
