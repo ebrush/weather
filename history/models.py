@@ -2,7 +2,7 @@ from django.db import models
 
 
 class WeatherStation(models.Model):
-    name = models.CharField(blank=False, max_length=20, unique=True)
+    code = models.CharField(blank=False, max_length=20, unique=True)
 
 
 class WeatherDay(models.Model):

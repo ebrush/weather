@@ -33,8 +33,8 @@ class Command(BaseCommand):
                 continue
 
             station = WeatherStation.objects.get_or_create(
-                defaults={'name': path.stem},
-                name=path.stem
+                defaults={'code': path.stem},
+                code=path.stem
             )[0]
             years_updated = set()
 
