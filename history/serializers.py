@@ -4,21 +4,24 @@ from history.models import WeatherDay, WeatherStats, WeatherStation
 
 
 class WeatherStationSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = WeatherStation
-        fields = ('code',)
+        fields = ('code', )
 
 
 class WeatherDaySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = WeatherDay
-        fields = ('station', 'date', 'temperature_max',
-                  'temperature_min', 'precipitation')
+        fields = ('station', 'date', 'temperature_max', 'temperature_min',
+                  'precipitation')
 
     station = WeatherStationSerializer()
 
 
 class WeatherStatsSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = WeatherStats
         fields = ('station', 'year', 'avg_temperature_max',

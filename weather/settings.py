@@ -1,6 +1,5 @@
 from weather.settings_base import *
 
-
 if not os.path.exists('logs'):
     os.mkdir('logs')
 
@@ -9,10 +8,12 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'timestamp_and_level': {
-            'format': '{"timestamp": "%(asctime)s", "level": "%(levelname)s", '
-                      '"module": "%(name)s", "line": "%(lineno)d", '
-                      '"data": %(message)s}',
-            'style': '%',
+            'format':
+            '{"timestamp": "%(asctime)s", "level": "%(levelname)s", '
+            '"module": "%(name)s", "line": "%(lineno)d", '
+            '"data": %(message)s}',
+            'style':
+            '%',
         }
     },
     'handlers': {

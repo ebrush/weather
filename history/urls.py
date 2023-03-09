@@ -5,22 +5,24 @@ from rest_framework import permissions
 
 from history.views import WeatherDayListView, WeatherStatsListView
 
-
 schema_view = get_schema_view(
-   openapi.Info(
-      title="Weather History API",
-      default_version='v1',
-   ),
-   public=True,
-   permission_classes=[permissions.AllowAny],
+    openapi.Info(
+        title="Weather History API",
+        default_version='v1',
+    ),
+    public=True,
+    permission_classes=[permissions.AllowAny],
 )
 
 urlpatterns = [
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
-            schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0),
+            schema_view.without_ui(cache_timeout=0),
+            name='schema-json'),
+    re_path(r'^swagger/$',
+            schema_view.with_ui('swagger', cache_timeout=0),
             name='schema-swagger-ui'),
-    re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0),
+    re_path(r'^redoc/$',
+            schema_view.with_ui('redoc', cache_timeout=0),
             name='schema-redoc'),
     path('stats', WeatherStatsListView.as_view()),
     path('', WeatherDayListView.as_view()),
