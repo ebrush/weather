@@ -67,6 +67,7 @@ class Command(BaseCommand):
              'files_processed': num_files_processed})
 
     def convert_file_rows_to_database_rows(self, station, filepath_to_load):
+        """based on a station and a path to file, return WeatherDay instances"""
         rows = []
         for (date, temperature_max,
              temperature_min,
@@ -85,6 +86,7 @@ class Command(BaseCommand):
         return rows
 
     def iter_files_to_process(self, path: str) -> Iterator[Path]:
+        """for user's input path, yield each filepath needing processing"""
         path = Path(path)
 
         if not path.exists():
@@ -101,6 +103,7 @@ class Command(BaseCommand):
             yield path
 
     def iter_rows_to_process(self, filepath_to_load: str):
+        """for a file needing processing, yield each row as raw data"""
         with open(filepath_to_load, 'r') as f:
             for line in f:
                 columns = re.findall(r'\S+', line)
@@ -110,6 +113,7 @@ class Command(BaseCommand):
                 yield columns
 
     def log_message_if_some_data_missing(self, weather_day: WeatherDay):
+        """check if any fields are null in a WeatherDay and log if so"""
         if (weather_day.temperature_max is None
                 or weather_day.temperature_min is None
                 or weather_day.precipitation is None):
@@ -123,6 +127,7 @@ class Command(BaseCommand):
             })
 
     def update_statistics(self, station, years_to_update):
+        """for a station and the given years, recalculate and save stats"""
         stats_to_update = []
 
         for r in WeatherDay.objects.filter(

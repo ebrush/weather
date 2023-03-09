@@ -2,13 +2,17 @@ from django.db import models
 
 
 class WeatherStation(models.Model):
-    code = models.CharField(blank=False, max_length=20, unique=True)
+    """represents a weather station."""
+    code = models.CharField(blank=False, max_length=20, unique=True,
+                            help_text='indicates file/station '
+                                      'weather data came from')
 
     def __str__(self):
         return f'Station({self.code})'
 
 
 class WeatherDay(models.Model):
+    """one day of weather info for one station"""
     station = models.ForeignKey(
         WeatherStation, null=False, on_delete=models.CASCADE, db_index=True)
     date = models.DateField(null=False, db_index=True)
@@ -28,6 +32,7 @@ class WeatherDay(models.Model):
 
 
 class WeatherStats(models.Model):
+    """statistics for a year of weather for one station"""
     station = models.ForeignKey(
         WeatherStation, null=False, on_delete=models.CASCADE, db_index=True)
     year = models.PositiveSmallIntegerField(null=False, db_index=True)
