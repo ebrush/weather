@@ -1,14 +1,14 @@
 # Weather API
 
 ## Table of contents
-Requirements
-Getting Started
-Examples
-Documentation
-Logs
-Design Rationales
-Future Improvements
-AWS Deployment Plan
+* Requirements
+* Getting Started
+* Examples
+* Documentation
+* Logs
+* Design Rationales
+* Future Improvements
+* AWS Deployment Plan
 
 ## Requirements
 * Tested on Manjaro Linux
@@ -33,7 +33,7 @@ AWS Deployment Plan
 
 ### API Request examples
 * See weather-history.postman_collection.json which can be imported into postman
-* Query params can be removed and adjusted to change filters and navigate through pagination.
+* Query params can be removed and adjusted for desired filtering and navigation through pagination.
 * More info on params are in the Swagger docs.
 * Units of measure are documented in Swagger and Django Model's help_texts.
   * In the api/weather endpoint, the original units of measurement of the file are kept.
