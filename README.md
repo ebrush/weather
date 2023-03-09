@@ -90,6 +90,7 @@
 ## Documentation
 In several places, useful comments and info can be found. These include:
 * docstrings
+* help_texts in Models
 * Swagger docs
 * the postman collection in weather-history.postman_collection.json
 * the django admin
