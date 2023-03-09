@@ -7,8 +7,8 @@ class WeatherStation(models.Model):
 
 class WeatherDay(models.Model):
     station = models.ForeignKey(
-        WeatherStation, null=False, on_delete=models.CASCADE)
-    date = models.DateField(null=False)
+        WeatherStation, null=False, on_delete=models.CASCADE, db_index=True)
+    date = models.DateField(null=False, db_index=True)
     temperature_max = models.SmallIntegerField(
         null=True, help_text='in tenths of a degree Celsius')
     temperature_min = models.SmallIntegerField(
@@ -23,8 +23,8 @@ class WeatherDay(models.Model):
 
 class WeatherStats(models.Model):
     station = models.ForeignKey(
-        WeatherStation, null=False, on_delete=models.CASCADE)
-    year = models.PositiveSmallIntegerField(null=False)
+        WeatherStation, null=False, on_delete=models.CASCADE, db_index=True)
+    year = models.PositiveSmallIntegerField(null=False, db_index=True)
     avg_temperature_max = models.DecimalField(
         null=True, help_text='in degrees Celsius',
         max_digits=6, decimal_places=2)
