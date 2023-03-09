@@ -10,7 +10,6 @@ schema_view = get_schema_view(
    openapi.Info(
       title="Weather History API",
       default_version='v1',
-      description="Test description",
    ),
    public=True,
    permission_classes=[permissions.AllowAny],

@@ -1,6 +1,8 @@
 import csv
 import datetime
 import logging
+import re
+from collections.abc import Iterator
 from pathlib import Path
 
 from django.core.management.base import BaseCommand, CommandError
@@ -22,72 +24,57 @@ class Command(BaseCommand):
                                  'will not be processed.')
 
     def handle(self, *args, **options):
-        path = Path(options['path'])
-        if not path.exists():
-            raise CommandError('provided path does not exist')
-        if path.is_dir():
-            file_paths_to_load = path.iterdir()
-        else:
-            file_paths_to_load = [options['path']]
-
         logger.info({'msg': 'ingestion started', 'path': options['path']})
         records_ingested_count = 0
         files_processed = 0
-        for filename_to_load in file_paths_to_load:
-            path = Path(filename_to_load)
-            if path.is_dir():
-                logger.warning({'msg': 'skipping subdirectory',
-                                'path': str(filename_to_load)})
-                continue
-
+        for filepath_to_load in self.iter_files_to_process(options['path']):
             station = WeatherStation.objects.get_or_create(
-                defaults={'code': path.stem},
-                code=path.stem
+                defaults={'code': filepath_to_load.stem},
+                code=filepath_to_load.stem
             )[0]
             years_updated = set()
 
-            with open(filename_to_load, 'r') as f:
-                reader = csv.reader(f, delimiter='\t')
-                weather_days_to_create = []
-                for (date, temperature_max,
-                     temperature_min, precipitation) in reader:
-                    date = datetime.datetime.strptime(date, '%Y%m%d').date()
-                    years_updated.add(date.year)
-                    temperature_max = (temperature_max
-                                       if temperature_max != '-9999'
-                                       else None)
-                    temperature_min = (temperature_min
-                                       if temperature_min != '-9999'
-                                       else None)
-                    precipitation = (precipitation
-                                     if precipitation != '-9999'
-                                     else None)
-                    if (temperature_max is None
-                            or temperature_min is None
-                            or precipitation is None):
-                        logger.warning({
-                            'msg': 'ingesting a row with missing data',
-                            'missing_temperature_max': temperature_max is None,
-                            'missing_temperature_min': temperature_min is None,
-                            'missing_precipitation': precipitation is None,
-                            'station': station.code,
-                            'date': date,
-                        })
-                    weather_days_to_create.append(WeatherDay(
-                        station=station,
-                        date=date,
-                        temperature_max=temperature_max,
-                        temperature_min=temperature_min,
-                        precipitation=precipitation,
-                    ))
-                    records_ingested_count += 1
-                WeatherDay.objects.bulk_create(
-                    weather_days_to_create,
-                    update_conflicts=True,
-                    update_fields=('temperature_max', 'temperature_min',
-                                   'precipitation'),
-                    unique_fields=('station', 'date'),
-                )
+            weather_days_to_create = []
+            for (date, temperature_max,
+                 temperature_min,
+                 precipitation) in self.iter_rows_to_process(filepath_to_load):
+                date = datetime.datetime.strptime(date, '%Y%m%d').date()
+                years_updated.add(date.year)
+                temperature_max = (temperature_max
+                                   if temperature_max != '-9999'
+                                   else None)
+                temperature_min = (temperature_min
+                                   if temperature_min != '-9999'
+                                   else None)
+                precipitation = (precipitation
+                                 if precipitation != '-9999'
+                                 else None)
+                if (temperature_max is None
+                        or temperature_min is None
+                        or precipitation is None):
+                    logger.warning({
+                        'msg': 'ingesting a row with missing data',
+                        'missing_temperature_max': temperature_max is None,
+                        'missing_temperature_min': temperature_min is None,
+                        'missing_precipitation': precipitation is None,
+                        'station': station.code,
+                        'date': date,
+                    })
+                weather_days_to_create.append(WeatherDay(
+                    station=station,
+                    date=date,
+                    temperature_max=temperature_max,
+                    temperature_min=temperature_min,
+                    precipitation=precipitation,
+                ))
+                records_ingested_count += 1
+            WeatherDay.objects.bulk_create(
+                weather_days_to_create,
+                update_conflicts=True,
+                update_fields=('temperature_max', 'temperature_min',
+                               'precipitation'),
+                unique_fields=('station', 'date'),
+            )
             files_processed += 1
 
             stats_to_update = []
@@ -116,3 +103,22 @@ class Command(BaseCommand):
             {'msg': 'ingestion finished', 'path': options['path'],
              'records_ingested': records_ingested_count,
              'files_processed': files_processed})
+
+    def iter_files_to_process(self, path: str) -> Iterator[Path]:
+        path = Path(path)
+        if not path.exists():
+            raise CommandError('provided path does not exist')
+        if path.is_dir():
+            for file_path in path.iterdir():
+                if file_path.is_dir():
+                    logger.warning({'msg': 'skipping subdirectory',
+                                    'path': str(file_path)})
+                    continue
+                yield file_path
+        else:
+            yield path
+
+    def iter_rows_to_process(self, filepath_to_load: Path):
+        with open(str(filepath_to_load), 'r') as f:
+            for line in f:
+                yield re.findall(r'\S+', line)

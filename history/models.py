@@ -18,6 +18,7 @@ class WeatherDay(models.Model):
 
     class Meta:
         unique_together = ('station', 'date')
+        ordering = ('station__code', 'date')
 
 
 class WeatherStats(models.Model):
@@ -33,3 +34,4 @@ class WeatherStats(models.Model):
 
     class Meta:
         unique_together = ('station', 'year')
+        ordering = ('station__code', 'year')
