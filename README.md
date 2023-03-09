@@ -90,7 +90,7 @@
 ## Documentation
 In several places, useful comments and info can be found. These include:
 * docstrings
-* swagger docs
+* Swagger docs
 * the postman collection in weather-history.postman_collection.json
 * the django admin
   * `python manage.py createsuperuser`
