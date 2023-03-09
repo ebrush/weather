@@ -1,0 +1,76 @@
+{
+	"info": {
+		"_postman_id": "b5203bfc-db21-46f1-9071-12d0e1ced689",
+		"name": "weather-history",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "weather history",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/weather?station__code=USC00338552&date=1985-01-01",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "station__code",
+							"value": "USC00338552"
+						},
+						{
+							"key": "date",
+							"value": "1985-01-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "weather stats",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/weather/stats?station__code=USC00338552&year=1985",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"weather",
+						"stats"
+					],
+					"query": [
+						{
+							"key": "station__code",
+							"value": "USC00338552"
+						},
+						{
+							"key": "year",
+							"value": "1985"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

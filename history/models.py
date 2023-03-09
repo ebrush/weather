@@ -4,6 +4,9 @@ from django.db import models
 class WeatherStation(models.Model):
     code = models.CharField(blank=False, max_length=20, unique=True)
 
+    def __str__(self):
+        return f'Station({self.code})'
+
 
 class WeatherDay(models.Model):
     station = models.ForeignKey(
@@ -19,6 +22,9 @@ class WeatherDay(models.Model):
     class Meta:
         unique_together = ('station', 'date')
         ordering = ('station__code', 'date')
+
+    def __str__(self):
+        return f'WeatherDay(station={self.station.code}, date={self.date})'
 
 
 class WeatherStats(models.Model):
@@ -38,3 +44,6 @@ class WeatherStats(models.Model):
     class Meta:
         unique_together = ('station', 'year')
         ordering = ('station__code', 'year')
+
+    def __str__(self):
+        return f'WeatherStats(station={self.station.code}, year={self.year})'
