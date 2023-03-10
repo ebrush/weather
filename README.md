@@ -28,14 +28,14 @@ SQLite3 will be used by default. PostgreSQL will be used automatically if you se
 
 If you want to test PostgreSQL locally:
 
-  docker run -d -e POSTGRES_PASSWORD=pgPass12345 -p 5432:5432 postgres:latest;
-  createuser -d -U postgres -P -w -p 5432 -h 0.0.0.0 weatherman;
-  createdb --owner=weatherman -w -p 5432 -U weatherman -W -h 0.0.0.0 weather;
-  export DB_USER=weatherman;
-  export DB_NAME=weather;
-  export DB_HOST=0.0.0.0;
-  export DB_PASSWORD=ThePasswordEnteredOnCreateUser;
-  export DB_PORT=5432;
+    docker run -d -e POSTGRES_PASSWORD=pgPass12345 -p 5432:5432 postgres:latest;
+    createuser -d -U postgres -P -w -p 5432 -h 0.0.0.0 weatherman;
+    createdb --owner=weatherman -w -p 5432 -U weatherman -W -h 0.0.0.0 weather;
+    export DB_USER=weatherman;
+    export DB_NAME=weather;
+    export DB_HOST=0.0.0.0;
+    export DB_PASSWORD=ThePasswordEnteredOnCreateUser;
+    export DB_PORT=5432;
 
 ## Examples of supported functionality
 ### Running the local server and viewing API Swagger docs
