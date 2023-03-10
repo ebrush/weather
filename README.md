@@ -103,7 +103,7 @@ If you want to test PostgreSQL locally:
 
 ### Creating HTML test coverage report
 `pytest --cov=. --cov-report html`
-
+(last tested at >90%)
 
 ## Documentation
 In several places, useful comments and info can be found. These include:
