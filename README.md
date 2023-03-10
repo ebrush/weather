@@ -82,10 +82,10 @@
 ### Applying code formatting
 `yapf --in-place **/*.py`
 
-### running tests
+### Running tests
 `pytest`
 
-### creating HTML test coverage report
+### Creating HTML test coverage report
 `pytest --cov=. --cov-report html`
 
 
