@@ -69,11 +69,14 @@ class Command(BaseCommand):
     def convert_file_rows_to_database_rows(self, station, filepath_to_load):
         """based on a station and a path to file, return WeatherDay instances"""
         rows = []
+        dates_encountered = set()
         for (date, temperature_max,
              temperature_min,
              precipitation) in self.iter_rows_to_process(
             str(filepath_to_load)):
             date = datetime.datetime.strptime(date, '%Y%m%d').date()
+            if date in dates_encountered:
+                continue
             weather_day = WeatherDay(
                 station=station,
                 date=date,
@@ -83,6 +86,7 @@ class Command(BaseCommand):
             )
             self.log_message_if_some_data_missing(weather_day)
             rows.append(weather_day)
+            dates_encountered.add(date)
         return rows
 
     def iter_files_to_process(self, path: str) -> Iterator[Path]:

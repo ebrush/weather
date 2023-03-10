@@ -39,26 +39,26 @@ class TestIngestHistoryCommandCalls:
             date__year=1989,
             date__month=3,
             date__day=13,
-            temperature_max=None,
-            temperature_min=6,
-            precipitation=0,
+            temperature_max=122,
+            temperature_min=-44,
+            precipitation=None,
         ).exists()
         assert WeatherDay.objects.filter(
             station__code='file_to_load2',
             date__year=1989,
             date__month=3,
             date__day=14,
-            temperature_max=94,
-            temperature_min=-33,
-            precipitation=5,
+            temperature_max=189,
+            temperature_min=None,
+            precipitation=53,
         ).exists()
         assert WeatherStats.objects.count() == 1
         assert WeatherStats.objects.filter(
             station__code='file_to_load2',
             year=1989,
-            avg_temperature_max=9.4,
-            avg_temperature_min=-1.35,
-            total_precipitation=.05,
+            avg_temperature_max=15.55,
+            avg_temperature_min=-4.40,
+            total_precipitation=.53,
         ).exists()
 
 

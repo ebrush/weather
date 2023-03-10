@@ -13,12 +13,28 @@
 ## Requirements
 * Tested on Manjaro Linux
 * Tested with Python 3.10.8
+* Tested with SQLite3 and Postgres 15.2
 
 ## Getting started
 1. Working directory should be this project directory for all operations.
 2. `python -m venv venv`
 3. `source venv/bin/activate`
 4. `pip install -r requirements.txt`
+5. (optional) setup PostgreSQL as shown below
+6. `python manage.py migrate`
+
+SQLite3 will be used by default. PostgreSQL will be used automatically if you set the 5 DB_* environment variables in settings_base.py. I like to use postgres in docker to get started easily as shown. You may need to install the PostgreSQL client applications to use createuser, createdb, etc.
+
+If you want to test PostgreSQL locally:
+
+  docker run -d -e POSTGRES_PASSWORD=pgPass12345 -p 5432:5432 postgres:latest;
+  createuser -d -U postgres -P -w -p 5432 -h 0.0.0.0 weatherman;
+  createdb --owner=weatherman -w -p 5432 -U weatherman -W -h 0.0.0.0 weather;
+  export DB_USER=weatherman;
+  export DB_NAME=weather;
+  export DB_HOST=0.0.0.0;
+  export DB_PASSWORD=ThePasswordEnteredOnCreateUser;
+  export DB_PORT=5432;
 
 ## Examples of supported functionality
 ### Running the local server and viewing API Swagger docs
@@ -108,12 +124,20 @@ Logs are skipped during automated tests.
 
 
 ## Design rationales
-* Instead of skipping duplicates, a file with same data is simply updated rather than duplicate skipped. This is faster than checking every row, and also means that the same file can be ingested multiple times without issue. It also has the bonus of being able to easily update existing data at a later time.
-* Rather than convert fractions of celsius and millimeters to standard units to store, original units are kept to preserve accuracy. Conversion and rounding is performed on final calculations. The units that are used are documented in Swagger API docs and help_texts in the models file.
+### Duplicate handling
+Duplicates are skipped within a single file upload, meaning that only the first row will be ingested. On subsequent uploads, if a row already exists in the database, it will be overwritten. This is faster than checking every row, and also means that the same file can be ingested multiple times without issue. It also has the bonus of being able to easily update existing data at a later time.
+
+### Units of measures saved
+Rather than convert fractions of celsius and millimeters to standard units to store, original units are kept to preserve accuracy. Conversion and rounding is performed on final calculations. The units that are used are documented in Swagger API docs and help_texts in the models file.
+
+### SQLite3 and PostgreSQL
+SQLite3 is the easiest and fastest to use for local testing, while PostgreSQL is performant, standards-compliant, and widely used and supported in many cloud environments. 
 
 
 ## Future Improvements
-* remove secret_key from repo, place in a separate configuration
-* rotate log files
+* Remove secret_key from repo, place in a separate configuration.
+* Rotate log files.
+* Depending on how the project is hosted, a file store may need to be mounted for the log files, or the logging could be changed to a cloud-based logging service.
+
 
 ## AWS Deployment Plan

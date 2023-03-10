@@ -1,3 +1,5 @@
+# This settings file is the same as settings_base.py but enables logging.
+
 from weather.settings_base import *
 
 if not os.path.exists('logs'):
