@@ -22,6 +22,7 @@
 4. `pip install -r requirements.txt`
 5. (optional) setup PostgreSQL as shown below
 6. `python manage.py migrate`
+7. `python -m pytest`
 
 SQLite3 will be used by default. PostgreSQL will be used automatically if you set the 5 DB_* environment variables in settings_base.py. I like to use postgres in docker to get started easily as shown. You may need to install the PostgreSQL client applications to use createuser, createdb, etc.
 
@@ -99,7 +100,7 @@ If you want to test PostgreSQL locally:
 `yapf --in-place **/*.py`
 
 ### Running tests
-`pytest`
+`pytest` or `python -m pytest`
 
 ### Creating HTML test coverage report
 `pytest --cov=. --cov-report html`
