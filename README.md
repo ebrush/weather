@@ -42,6 +42,8 @@ If you want to test PostgreSQL locally:
 1. `python manage.py runserver`
 2. navigate to http://127.0.0.1:8000/api/weather/swagger/
 
+JSON and yaml versions of the API spec can be downloaded by appending ".json" or ".yaml" to the Swagger url.
+
 ### Ingesting a single file
 `python manage.py ingest_history path/to/weather_file.txt`
 
@@ -139,6 +141,19 @@ SQLite3 is the easiest and fastest to use for local testing, while PostgreSQL is
 * Remove secret_key from repo, place in a separate configuration.
 * Rotate log files.
 * Depending on how the project is hosted, a file store may need to be mounted for the log files, or the logging could be changed to a cloud-based logging service.
+* A way of triggering ingestion via API. This will allow more flexibility and help in deploying to different environments.
+* Ways of ingesting non-local files. An AWS Lambda can read files from S3 or an FTP server, which may be necessary once the project is hosted, depending on where the files are located when provided.
 
 
 ## AWS Deployment Plan
+The services I would use are:
+
+Lambda - for serving the API. This will minimize costs of running the API
+S3 - for storing the style files needed for the Swagger docs
+CloudFront - for distributing the files in S3
+RDS - for hosting a PostgreSQL instance
+EventBridge - for scheduling a periodic ingestion of files by triggering a weather ingestion endpoint in the Lambda API
+
+
+All services could be updated automatically with a CI script in Github or Gitlab. I prefer these to CircleCI since the repo is with the deployment code.
+Preferably we would also have Terraform code for initially provisioning the services.
