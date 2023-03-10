@@ -149,9 +149,13 @@ SQLite3 is the easiest and fastest to use for local testing, while PostgreSQL is
 The services I would use are:
 
 Lambda - for serving the API. This will minimize costs of running the API
+
 S3 - for storing the style files needed for the Swagger docs
+
 CloudFront - for distributing the files in S3
+
 RDS - for hosting a PostgreSQL instance
+
 EventBridge - for scheduling a periodic ingestion of files by triggering a weather ingestion endpoint in the Lambda API
 
 
