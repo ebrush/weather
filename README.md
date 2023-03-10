@@ -41,6 +41,7 @@
 
 #### Iterate days of weather
 `GET http://127.0.0.1:8000/api/weather?station__code=USC00338552&date=1985-01-01&limit=10&offset=0`
+
     {
         "count": 1,
         "next": null,
@@ -60,6 +61,7 @@
 
 #### Iterate years of weather by station to see weather stats
 `GET http://127.0.0.1:8000/api/weather/stats?station__code=USC00338552&year=1985`
+
     {
         "count": 1,
         "next": null,
